@@ -37,10 +37,36 @@ async function run() {
       response.send(result);
     });
 
+    app.get('/users/:id', async (request, response) => {
+      const id = request.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await usersCollections.findOne(query);
+      response.send(result);
+    });
+
     // post method
     app.post('/users', async (request, response) => {
       const user = request.body;
       const result = await usersCollections.insertOne(user);
+      response.send(result);
+    });
+
+    app.put('/users/:id', async (request, response) => {
+      const id = request.params.id;
+      const updateUser = request.body;
+      const filter = { _id: new ObjectId(id) };
+      const option = { upsert: true };
+      const updatedUser = {
+        $set: {
+          emailValue: updateUser.userName,
+          nameValue: updateUser.email,
+        },
+      };
+      const result = await usersCollections.updateOne(
+        filter,
+        updatedUser,
+        option
+      );
       response.send(result);
     });
 
